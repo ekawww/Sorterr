@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyszukiwanie Sekretarek</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            gap: 1px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .highlighted {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wyszukiwanie Sekretarek</h1>
+    <div id="grid"></div>
+    <label for="nameInput">Wprowadź imię:</label>
+    <input type="text" id="nameInput">
+    <button onclick="searchSecretary()">Szukaj</button>
+    <p id="result"></p>
+    <p id="secretaryInfo"></p>
+
+    <script>
+        const sekretarki = {
+            'DAWN BRITTAIN': {imiona: ["aderinto", "lewis", "grogan", "vijayanand", "jones", "smith", "venkatesh", "DAWN", "BRITTAIN"], miejsce: [5, 6]},
+            'JAYNE THOMPSON': {imiona: ["jameison", "verma", "parmer", "james", "orme", "conroy", "wright", "jung", "JAYNE", "THOMPSON"], miejsce: [7, 6]},
+            'VICKI SHORT RB ': {imiona: ["budgen", "turton", "del", "galdo", "whitwell", "grace", "dugdale", "peacey", "sinha", "kattan", "VICKI", "SHORT","hussain", "barr", "BELL", "RACHEL"], miejsce: [1, 6]},
+            'LYNN HARRISON': {imiona: ["sagar", "toogood", "smith", "halstead", "LYNN", "HARRISON"], miejsce: [7, 5]},
+            'ELAINE INGHAM': {imiona: ["wall", "campbell", "riyat", "sood", "ELAINE", "INGHAM"], miejsce: [3, 6]},
+            'KEZIAH O TOOLE': {imiona: ["kelly", "rawes", "shetty", "tay", "tulwa", "holton", "KEZIAH", "TOOLE"], miejsce: [2, 6]},
+            'CARDIOLOGY': {imiona: ["sapsford", "schlosshan", "malkin"], miejsce: [1, 5]},
+            'JANINE CULLEY': {imiona: ["kayes", "khan", "turner", "JANINE", "CULLEY"], miejsce: [4, 6]},
+            'ALEX APPLEYARD': {imiona: ["russell", "serela","ALEX", "APPLEYARD"], miejsce: [7, 5]},
+            'AMY STOTT': {imiona: ["kimuli", "stables", "hackney", "monkhouse", "AMY", "STOTT"], miejsce: [5, 6]},
+            'RACHEL BELL': {imiona: ["hussain", "barr", "BELL", "RACHEL"], miejsce: [5, 6]},
+        };
+
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            let counter = 1;
+            for (let j = 1; j <= 6; j++) {
+                for (let i = 1; i <= 7; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = counter++;
+                    cell.id = `cell-${i}-${j}`;
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function findSecretary(name) {
+            for (const [secretary, data] of Object.entries(sekretarki)) {
+                if (data.imiona.some(i => i.toLowerCase().includes(name.toLowerCase()))) {
+                    return [secretary, data.miejsce];
+                }
+            }
+            return [null, null];
+        }
+
+        function highlightCell(x, y) {
+            const cell = document.getElementById(`cell-${x}-${y}`);
+            cell.classList.add('highlighted');
+        }
+
+        function resetGrid() {
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('highlighted');
+            });
+        }
+
+        function searchSecretary() {
+            resetGrid();
+            const name = document.getElementById('nameInput').value;
+            const [secretary, location] = findSecretary(name);
+            const resultElement = document.getElementById('result');
+            const infoElement = document.getElementById('secretaryInfo');
+
+            if (secretary) {
+                resultElement.textContent = `Sekretarka: ${secretary}`;
+                highlightCell(location[0], location[1]);
+                const names = sekretarki[secretary].imiona.join(', ');
+                infoElement.textContent = `Sekretarka: ${secretary}\nNumer na siatce: ${(location[1]-1)*7 + location[0]}\nImiona: ${names}`;
+            } else {
+                resultElement.textContent = "OUTPATIENTS: Lokalizacja 6,7.";
+                highlightCell(1, 4);
+                infoElement.textContent = '';
+            }
+        }
+
+        createGrid();
+    </script>
+</body>
+</html>
